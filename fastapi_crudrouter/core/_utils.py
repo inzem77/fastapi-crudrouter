@@ -14,7 +14,8 @@ class AttrDict(dict):  # type: ignore
 
 def get_pk_type(schema: Type[PYDANTIC_SCHEMA], pk_field: str) -> Any:
     try:
-        return schema.__fields__[pk_field].type_
+        #return schema.model_fields[pk_field].type_
+        return schema.model_fields[pk_field]._attributes_set['annotation']
     except KeyError:
         return int
 
@@ -26,11 +27,17 @@ def schema_factory(
     Is used to create a CreateSchema which does not contain pk
     """
 
+    #fields = {
+    #    f.name: (f.type_, ...)
+    #    for f in schema_cls.__fields__.values()
+    #    if f.name != pk_field_name
+    #}
     fields = {
-        f.name: (f.type_, ...)
-        for f in schema_cls.__fields__.values()
-        if f.name != pk_field_name
+        k: (v._attributes_set['annotation'], ...)
+        for k, v in schema_cls.model_fields.items()
+        if k != pk_field_name
     }
+
 
     name = schema_cls.__name__ + name
     schema: Type[T] = create_model(__model_name=name, **fields)  # type: ignore
