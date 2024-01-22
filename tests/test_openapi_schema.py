@@ -24,6 +24,7 @@ class TestOpenAPISpec:
         paths = schema["paths"]
 
         assert len(paths) == len(PATH_TAGS)
+        print(paths.items())
         for path, method in paths.items():
             assert len(method) == 3
 
@@ -41,7 +42,7 @@ class TestOpenAPISpec:
         assert "422" in paths[path]["post"]["responses"]
 
         item_path = path + "/{item_id}"
-        for method in ["get", "put", "delete"]:
+        for method in ["get", "put", "patch", "delete"]:
             assert "200" in paths[item_path][method]["responses"]
             assert "404" in paths[item_path][method]["responses"]
             assert "422" in paths[item_path][method]["responses"]

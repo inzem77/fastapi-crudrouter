@@ -1,5 +1,3 @@
-import sys
-
 from .databases_ import (
     databases_implementation,
     databases_implementation_custom_ids,
@@ -25,7 +23,6 @@ from .sqlalchemy_ import (
     sqlalchemy_implementation_string_pk,
     DSN_LIST,
 )
-from .tortoise_ import tortoise_implementation
 
 implementations = [
     (memory_implementation, ""),
@@ -36,6 +33,9 @@ implementations = [
 implementations.extend([(sqlalchemy_implementation, dsn) for dsn in DSN_LIST])
 implementations.extend([(databases_implementation, dsn) for dsn in DSN_LIST])
 
-
-if sys.version_info >= (3, 8):
+try:
+    from .tortoise_ import tortoise_implementation
+except ImportError:
+    pass
+else:
     implementations.append((tortoise_implementation, ""))

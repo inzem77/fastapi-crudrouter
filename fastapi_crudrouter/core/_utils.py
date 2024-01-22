@@ -12,6 +12,21 @@ class AttrDict(dict):  # type: ignore
         self.__dict__ = self
 
 
+# TODO this lets the patch request come with arbitrary number of fields
+# Need to validate the fields that are present only in the schema
+# TODO in77
+def make_optional(baseclass:Type[T]) -> Type[T]:
+    # Extracts the fields and validators from the baseclass and make fields optional
+    fields = baseclass.__fields__
+    validators = {"__validators__": baseclass.__validators__}
+    optional_fields = {
+        key: (Optional[item.type_], None) for key, item in fields.items()
+    }
+    return create_model(
+        f"{baseclass.__name__}Optional", **optional_fields, __validators__=validators
+    )
+
+
 def get_pk_type(schema: Type[PYDANTIC_SCHEMA], pk_field: str) -> Any:
     try:
         #return schema.model_fields[pk_field].type_
